@@ -9,6 +9,7 @@
 # install.package(ggplot2)
 
 # Libraries needed
+library(tidyverse)
 library(skimr)
 library(readr)
 library(ggplot2)
@@ -45,4 +46,25 @@ write.csv(joinedData, "./../cleanData/joinedData.csv", row.names=FALSE)
 
 data <- read.csv("./../cleanData/joinedData.csv", header=TRUE)
 
-summary(data)
+# TODO: Set first row as columns names
+
+cleanData <- data
+
+# Cannot figure out how to rename columns so for the sake of
+# analysis I am going to chop off the first row
+cleanData <- tail(cleanData, -1)
+
+# Let's look at some summaries
+summary(cleanData)
+skim(cleanData)
+unique(cleanData)
+
+# First column is indexing so we can delete
+cleanData$X <- NULL
+# Second column is always the same so we can delete too
+cleanData$X0 <- NULL
+
+# VERY little numeric data... Let's histogram
+# the occurences of difference establishments
+ggplot(cleanData, aes(x=cleanData$X2)) + geom_bar()
+# That's a lot...
