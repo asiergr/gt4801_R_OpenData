@@ -23,7 +23,7 @@ path = "~/gtech/gt4801R/cleanData/"
 fileNames <- dir(path, pattern=".csv")
 
 # Read in the first file
-joinedData <- read.csv(paste(path, fileNames[1], sep=""))
+joinedData <- read.csv(paste(path, fileNames[1], sep=""), header=TRUE)
 
 # All the files have the same variables
 # We save the header row in a variable (grabbed from 1st dataset)
