@@ -50,10 +50,6 @@ data <- read.csv("./../cleanData/joinedData.csv", header=TRUE)
 
 cleanData <- data
 
-# Cannot figure out how to rename columns so for the sake of
-# analysis I am going to chop off the first row
-cleanData <- tail(cleanData, -1)
-
 # Let's look at some summaries
 summary(cleanData)
 skim(cleanData)
