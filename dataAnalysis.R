@@ -19,24 +19,18 @@ library(ggplot2)
 
 ## NEXT FEW STEPS ONLY HAVE TO BE DONE ONCE, THATS WHY THEY'RE COMMENTED OUT
 # Access all the files in the directory
-path = "~/gtech/gt4801R/cleanData/"
+path = "~/gtech/gt4801R/data/"
 fileNames <- dir(path, pattern=".csv")
 
 # Read in the first file
-joinedData <- read.csv(paste(path, fileNames[1], sep=""), header=TRUE)
+joinedData <- read.csv(paste(path, fileNames[1], sep=""), header=TRUE, sep=";")
 
 # All the files have the same variables
-# We save the header row in a variable (grabbed from 1st dataset)
-headerRow <- head(joinedData, 1)
-# Chop off header row of the dataset
-joinedData <- tail(joinedData, -1)
-
 # Loop through all the files and join them
 for (i in 2:length(fileNames)) {
-  file <- read.csv(paste(path, fileNames[i], sep=""))
-  joinedData <- rbind(tail(file, -1), joinedData)}
+  file <- read.csv(paste(path, fileNames[i], sep=""), header=TRUE, sep=";")
+  joinedData <- rbind(file, joinedData)}
 
-joinedData <- rbind(headerRow, joinedData)
 write.csv(joinedData, "./../cleanData/joinedData.csv", row.names=FALSE)
 # Now we have a big (1GB!) Dataset with all the data. We will simply call this one from now on
 
@@ -45,10 +39,6 @@ write.csv(joinedData, "./../cleanData/joinedData.csv", row.names=FALSE)
 ## ANALYSIS
 
 data <- read.csv("./../cleanData/joinedData.csv", header=TRUE)
-
-# TODO: Set first row as columns names
-
-cleanData <- data
 
 # Let's look at some summaries
 summary(cleanData)
@@ -60,7 +50,11 @@ cleanData$X <- NULL
 # Second column is always the same so we can delete too
 cleanData$X0 <- NULL
 
-# VERY little numeric data... Let's histogram
-# the occurences of difference establishments
-ggplot(cleanData, aes(x=cleanData$X2)) + geom_bar()
-# That's a lot...
+# Eliminate all variables without a name (maybe look at it in future analysis)
+# Eliminiate columns with unchanging values
+cleanData <- cleanData[,2:27]
+
+# We're going to do some analysis on the time of consumer behaviour
+timeFrame <- data.frame(cleanData$fecha_hora_factura, cleanData$precio_menu, cleanData$descripcion_cliente)
+timeFrame <- timeFrame[order(timeFrame$cleanData.fecha_hora_factura),]
+
