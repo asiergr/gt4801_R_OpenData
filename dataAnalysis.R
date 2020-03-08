@@ -77,9 +77,14 @@ salesByNum$fecha_hora_factura <- format(salesByNum$fecha_hora_factura, format = 
 salesByNum <- salesByNum[order(salesByNum$fecha_hora_factura),]
 # See how many sales we got per day
 salesPerDay <- table(salesByNum$fecha_hora_factura)
-colnames(salesPerDay) <- c("date_MM/DD", "number_of_sales")
 # Turn it into a Tibble for better managing
 salesPerDay <- as_tibble(data.frame(salesPerDay))
-rownames(salesPerDay) <- salesPerDay$Var1
-salesPerDay$Var1 <- NULL
+colnames(salesPerDay) <- c("date", "number_of_sales")
+
 # Now we have the tibble for the timeseries analysis
+# Let's make some graphs
+ggplot(salesPerDay, aes(x = date, y = number_of_sales)) + geom_point()
+# Not too clear what is going on. try connecting the dots
+ggplot(salesPerDay, aes(date, number_of_sales, group = 1)) + geom_line()
+# Fun Fun Fun
+       
