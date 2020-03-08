@@ -8,6 +8,8 @@
 # install.packages("skimr")
 # install.packages("ggplot2")
 # install.packages("astsa")
+# install.packages("lubridate")
+# install.packages("plyr")
 
 # Libraries needed
 library(tidyverse)
@@ -15,6 +17,8 @@ library(skimr)
 library(readr)
 library(ggplot2)
 library(astsa)
+library(lubridate)
+library(plyr)
 
 # Import all the (clean) data from ../cleanData
 # // TODO
@@ -69,22 +73,23 @@ salesByNum <- interestData[, c("numero_factura",
 salesByNum <- distinct(salesByNum)
 # Interesting fact, the number of rows got divided by 3
 # Convert column into datetime objects
-salesByNum$fecha_hora_factura <- as.Date(as.character(salesByNum$fecha_hora_factura,
-                                                      format = "%d/%m/%Y"))
-# The year parses wrong but it is all 2019 so we can just remove it
-salesByNum$fecha_hora_factura <- format(salesByNum$fecha_hora_factura, format = "%Y/%m")
+salesByNum$fecha_hora_factura <- dmy_hms(as.character(salesByNum$fecha_hora_factura))
 # Sort by date (date is in form DD/MM/YYYY)
-salesByNum <- salesByNum[order(salesByNum$fecha_hora_factura),]
+salesByNum <- arrange(salesByNum, fecha_hora_factura)
+salesByNum$fecha_hora_factura <- format(salesByNum$fecha_hora_factura,
+                                        format = "%Y/%m/%d")
 # See how many sales we got per day
 salesPerDay <- table(salesByNum$fecha_hora_factura)
 # Turn it into a Tibble for better managing
 salesPerDay <- as_tibble(data.frame(salesPerDay))
 colnames(salesPerDay) <- c("date", "number_of_sales")
+# When turning into tibble dates are not Date object anymore
+salesPerDay$date <- ymd(as.character(salesPerDay$date))
 
 # Now we have the tibble for the timeseries analysis
 # Let's make some graphs
 ggplot(salesPerDay, aes(x = date, y = number_of_sales)) + geom_point()
 # Not too clear what is going on. try connecting the dots
-ggplot(salesPerDay, aes(date, number_of_sales, group = 1)) + geom_line()
-# Fun Fun Fun
+ggplot(salesPerDay, aes(date, number_of_sales, group = 1)) + geom_line() + scale_x_date(date_labels = "%d/%m/%Y")
+# We have some very weird points
        
