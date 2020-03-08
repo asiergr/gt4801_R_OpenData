@@ -75,4 +75,11 @@ salesByNum$fecha_hora_factura <- as.Date(as.character(salesByNum$fecha_hora_fact
 salesByNum$fecha_hora_factura <- format(salesByNum$fecha_hora_factura, format = "%Y/%m")
 # Sort by date (date is in form DD/MM/YYYY)
 salesByNum <- salesByNum[order(salesByNum$fecha_hora_factura),]
-
+# See how many sales we got per day
+salesPerDay <- table(salesByNum$fecha_hora_factura)
+colnames(salesPerDay) <- c("date_MM/DD", "number_of_sales")
+# Turn it into a Tibble for better managing
+salesPerDay <- as_tibble(data.frame(salesPerDay))
+rownames(salesPerDay) <- salesPerDay$Var1
+salesPerDay$Var1 <- NULL
+# Now we have the tibble for the timeseries analysis
