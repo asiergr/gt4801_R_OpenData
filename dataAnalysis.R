@@ -41,20 +41,15 @@ write.csv(joinedData, "./../cleanData/joinedData.csv", row.names=FALSE)
 data <- read.csv("./../cleanData/joinedData.csv", header=TRUE)
 
 # Let's look at some summaries
-summary(cleanData)
-skim(cleanData)
-unique(cleanData)
+summary(data)
+skim(data)
+unique(data)
 
 # First column is indexing so we can delete
 cleanData$X <- NULL
 # Second column is always the same so we can delete too
 cleanData$X0 <- NULL
 
-# Eliminate all variables without a name (maybe look at it in future analysis)
-# Eliminiate columns with unchanging values
-cleanData <- cleanData[,2:27]
-
-# We're going to do some analysis on the time of consumer behaviour
-timeFrame <- data.frame(cleanData$fecha_hora_factura, cleanData$precio_menu, cleanData$descripcion_cliente)
-timeFrame <- timeFrame[order(timeFrame$cleanData.fecha_hora_factura),]
+# Select interesting columns
+timeAnalysis <- data[, c()]
 
