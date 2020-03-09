@@ -20,6 +20,7 @@ library(ggplot2)
 library(astsa)
 library(lubridate)
 library(plyr)
+library(forecast)
 
 # Import all the (clean) data from ../cleanData
 # // TODO
@@ -94,18 +95,14 @@ ggplot(salesPerDay, aes(x = date, y = number_of_sales)) + geom_point()
 ggplot(salesPerDay, aes(date, number_of_sales, group = 1)) + geom_line() + scale_x_date(date_labels = "%Y/%m/%d")
 # We have some very weird shapes. Let's cut some of the data
 # By inspection the biggest jump occurs on 2019-07-21 which is row 62
-# modelData <- salesPerDay[63:223,]
+modelData <- salesPerDay[63:223,]
 ggplot(modelData, aes(date, number_of_sales, group = 1)) + geom_line() + scale_x_date(date_labels = "%Y/%m/%d")
 
 # Now we do the time series analysis
 # Turn it into timeseries object
-ts1 <- ts(modelData$date, frequency=6)
-components <- decompose(ts1)
-plot(components)
+ts1 <- ts(modelData$number_of_sales, frequency=7)
 
-train_series=ts1[1:70]
-test_series=ts1[71:141]
-
-fit_basic1<- auto.arima(train_series)
-forecast_1<-forecast(fit_basic1,xreg = testREG_TS)
-plot.forecast(forecast_1)
+fit1 <- auto.arima(ts1)
+cast1 <- forecast(fit1)
+cast1
+plot(cast1)
