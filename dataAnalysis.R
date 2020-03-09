@@ -10,6 +10,7 @@
 # install.packages("astsa")
 # install.packages("lubridate")
 # install.packages("plyr")
+# install.packages("forecast")
 
 # Libraries needed
 library(tidyverse)
@@ -81,7 +82,7 @@ salesByNum$fecha_hora_factura <- format(salesByNum$fecha_hora_factura,
 # See how many sales we got per day
 salesPerDay <- table(salesByNum$fecha_hora_factura)
 # Turn it into a Tibble for better managing
-salesPerDay <- as_tibble(data.frame(salesPerDay))
+salesPerDay <- data.frame(salesPerDay)
 colnames(salesPerDay) <- c("date", "number_of_sales")
 # When turning into tibble dates are not Date object anymore
 salesPerDay$date <- ymd(as.character(salesPerDay$date))
@@ -90,6 +91,21 @@ salesPerDay$date <- ymd(as.character(salesPerDay$date))
 # Let's make some graphs
 ggplot(salesPerDay, aes(x = date, y = number_of_sales)) + geom_point()
 # Not too clear what is going on. try connecting the dots
-ggplot(salesPerDay, aes(date, number_of_sales, group = 1)) + geom_line() + scale_x_date(date_labels = "%d/%m/%Y")
-# We have some very weird points
-       
+ggplot(salesPerDay, aes(date, number_of_sales, group = 1)) + geom_line() + scale_x_date(date_labels = "%Y/%m/%d")
+# We have some very weird shapes. Let's cut some of the data
+# By inspection the biggest jump occurs on 2019-07-21 which is row 62
+# modelData <- salesPerDay[63:223,]
+ggplot(modelData, aes(date, number_of_sales, group = 1)) + geom_line() + scale_x_date(date_labels = "%Y/%m/%d")
+
+# Now we do the time series analysis
+# Turn it into timeseries object
+ts1 <- ts(modelData$date, frequency=6)
+components <- decompose(ts1)
+plot(components)
+
+train_series=ts1[1:70]
+test_series=ts1[71:141]
+
+fit_basic1<- auto.arima(train_series)
+forecast_1<-forecast(fit_basic1,xreg = testREG_TS)
+plot.forecast(forecast_1)
